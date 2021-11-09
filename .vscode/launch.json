@@ -5,12 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Flask",
+            "name": "run",
             "type": "python",
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "openapi_server/__main__.py",
+                "FLASK_APP": "src/__main__.py",
                 "FLASK_ENV": "development"
             },
             "args": [
