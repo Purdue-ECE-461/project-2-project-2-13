@@ -14,49 +14,12 @@ info:
 servers:
 - url: /
 paths:
-  /authenticate:
-    description: |-
-      If your system supports the authentication scheme described in the spec, then:
-
-      1. The obtained token should be provided to the other endpoints via the "X-Authorization" header.
-      2. The "Authorization" header is *required* in your system.
-
-      Otherwise, this endpoint should return HTTP 501 "Not implemented", and the "X-Authorization" header should be unused for the other endpoints.
-    put:
-      operationId: create_auth_token
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuthenticationRequest'
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthenticationToken'
-          description: Success.
-        "401":
-          description: Authentication failed (e.g. no such user or invalid password)
-        "501":
-          description: This system does not support authentication.
-      x-openapi-router-controller: openapi_server.controllers.default_controller
-    summary: Authenticate this user -- get an access token.
   /package:
     description: The "ID" field in the request body allows the user to use their own
       ID scheme. If this ID is already in use, the system chooses a new ID and indicates
       this in the response body.
     post:
       operationId: package_create
-      parameters:
-      - explode: false
-        in: header
-        name: X-Authorization
-        required: true
-        schema:
-          $ref: '#/components/schemas/AuthenticationToken'
-        style: simple
       requestBody:
         content:
           application/json:
@@ -82,13 +45,6 @@ paths:
       operationId: package_by_name_delete
       parameters:
       - explode: false
-        in: header
-        name: X-Authorization
-        required: false
-        schema:
-          $ref: '#/components/schemas/AuthenticationToken'
-        style: simple
-      - explode: false
         in: path
         name: name
         required: true
@@ -112,13 +68,6 @@ paths:
         required: true
         schema:
           $ref: '#/components/schemas/PackageName'
-        style: simple
-      - explode: false
-        in: header
-        name: X-Authorization
-        required: false
-        schema:
-          $ref: '#/components/schemas/AuthenticationToken'
         style: simple
       responses:
         default:
@@ -149,13 +98,6 @@ paths:
     delete:
       operationId: package_delete
       parameters:
-      - explode: false
-        in: header
-        name: X-Authorization
-        required: false
-        schema:
-          $ref: '#/components/schemas/AuthenticationToken'
-        style: simple
       - description: Package ID
         explode: false
         in: path
@@ -175,13 +117,6 @@ paths:
       description: Return this package.
       operationId: package_retrieve
       parameters:
-      - explode: false
-        in: header
-        name: X-Authorization
-        required: false
-        schema:
-          $ref: '#/components/schemas/AuthenticationToken'
-        style: simple
       - description: ID of package to fetch
         explode: false
         in: path
@@ -211,13 +146,6 @@ paths:
         The package contents (from PackageData) will replace the previous contents.
       operationId: package_update
       parameters:
-      - explode: false
-        in: header
-        name: X-Authorization
-        required: false
-        schema:
-          $ref: '#/components/schemas/AuthenticationToken'
-        style: simple
       - explode: false
         in: path
         name: id
@@ -250,13 +178,6 @@ paths:
         schema:
           $ref: '#/components/schemas/PackageID'
         style: simple
-      - explode: false
-        in: header
-        name: X-Authorization
-        required: false
-        schema:
-          $ref: '#/components/schemas/AuthenticationToken'
-        style: simple
       responses:
         "200":
           content:
@@ -281,13 +202,6 @@ paths:
       description: Get any packages fitting the query.
       operationId: packages_list
       parameters:
-      - explode: false
-        in: header
-        name: X-Authorization
-        required: false
-        schema:
-          $ref: '#/components/schemas/AuthenticationToken'
-        style: simple
       - description: Provide this for pagination. If not provided, returns the first
           page of results.
         explode: true
@@ -347,19 +261,9 @@ paths:
   /reset:
     delete:
       operationId: registry_reset
-      parameters:
-      - explode: false
-        in: header
-        name: X-Authorization
-        required: false
-        schema:
-          $ref: '#/components/schemas/AuthenticationToken'
-        style: simple
       responses:
         "200":
           description: Registry is reset.
-        "401":
-          description: You do not have permission to reset the registry.
       x-openapi-router-controller: openapi_server.controllers.default_controller
     summary: Reset registry
 components:
@@ -459,38 +363,6 @@ components:
           type: string
       title: PackageData
       type: object
-    User:
-      example:
-        name: Alfalfa
-        isAdmin: true
-      properties:
-        name:
-          example: Alfalfa
-          title: name
-          type: string
-        isAdmin:
-          description: Is this user an admin?
-          title: isAdmin
-          type: boolean
-      required:
-      - isAdmin
-      - name
-      title: User
-      type: object
-    UserAuthenticationInfo:
-      description: Authentication info for a user
-      example:
-        password: password
-      properties:
-        password:
-          description: Password for a user. Per the spec, this should be a "strong"
-            password.
-          title: password
-          type: string
-      required:
-      - password
-      title: UserAuthenticationInfo
-      type: object
     PackageID:
       title: PackageID
       type: string
@@ -549,9 +421,7 @@ components:
       description: One entry of the history of this package.
       example:
         Action: CREATE
-        User:
-          name: Alfalfa
-          isAdmin: true
+        User: '{}'
         PackageMetadata:
           Version: 1.2.3
           ID: ID
@@ -590,26 +460,6 @@ components:
         - The name "*" is reserved. See the `/packages` API for its meaning.
       title: PackageName
       type: string
-    AuthenticationToken:
-      description: 'The spec permits you to use any token format you like. You could,
-        for example, look into JSON Web Tokens ("JWT", pronounced "jots"): https://jwt.io.'
-      type: string
-    AuthenticationRequest:
-      example:
-        Secret:
-          password: password
-        User:
-          name: Alfalfa
-          isAdmin: true
-      properties:
-        User:
-          $ref: '#/components/schemas/User'
-        Secret:
-          $ref: '#/components/schemas/UserAuthenticationInfo'
-      required:
-      - Secret
-      - User
-      type: object
     SemverRange:
       example: |-
         Exact (1.2.3)
@@ -651,10 +501,3 @@ components:
       description: Offset in pagination.
       example: "1"
       type: string
-  securitySchemes:
-    UserAndPasswordYieldsToken:
-      description: Use the /authentication endpoint to obtain an authorization token.
-      in: header
-      name: X-Authorization
-      type: apiKey
-      x-apikeyInfoFunc: openapi_server.controllers.security_controller_.info_from_UserAndPasswordYieldsToken

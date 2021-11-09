@@ -6,7 +6,6 @@ import unittest
 from flask import json
 from six import BytesIO
 
-from openapi_server.models.authentication_request import AuthenticationRequest  # noqa: E501
 from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.package import Package  # noqa: E501
 from openapi_server.models.package_history_entry import PackageHistoryEntry  # noqa: E501
@@ -19,38 +18,12 @@ from openapi_server.test import BaseTestCase
 class TestDefaultController(BaseTestCase):
     """DefaultController integration test stubs"""
 
-    def test_create_auth_token(self):
-        """Test case for create_auth_token
-
-        
-        """
-        authentication_request = {
-  "Secret" : {
-    "password" : "password"
-  },
-  "User" : {
-    "name" : "Alfalfa",
-    "isAdmin" : true
-  }
-}
-        headers = { 
-        }
-        response = self.client.open(
-            '/authenticate',
-            method='PUT',
-            headers=headers,
-            data=json.dumps(authentication_request),
-            content_type='application/json')
-        self.assert200(response,
-                       'Response body is : ' + response.data.decode('utf-8'))
-
     def test_package_by_name_delete(self):
         """Test case for package_by_name_delete
 
         Delete all versions of this package.
         """
         headers = { 
-            'x_authorization': 'x_authorization_example',
         }
         response = self.client.open(
             '/package/byName/{name}'.format(name='name_example'),
@@ -65,7 +38,6 @@ class TestDefaultController(BaseTestCase):
         
         """
         headers = { 
-            'x_authorization': 'x_authorization_example',
         }
         response = self.client.open(
             '/package/byName/{name}'.format(name='name_example'),
@@ -92,7 +64,6 @@ class TestDefaultController(BaseTestCase):
   }
 }
         headers = { 
-            'x_authorization': 'x_authorization_example',
         }
         response = self.client.open(
             '/package',
@@ -109,7 +80,6 @@ class TestDefaultController(BaseTestCase):
         Delete this version of the package.
         """
         headers = { 
-            'x_authorization': 'x_authorization_example',
         }
         response = self.client.open(
             '/package/{id}'.format(id='id_example'),
@@ -124,7 +94,6 @@ class TestDefaultController(BaseTestCase):
         
         """
         headers = { 
-            'x_authorization': 'x_authorization_example',
         }
         response = self.client.open(
             '/package/{id}/rate'.format(id='id_example'),
@@ -139,7 +108,6 @@ class TestDefaultController(BaseTestCase):
         
         """
         headers = { 
-            'x_authorization': 'x_authorization_example',
         }
         response = self.client.open(
             '/package/{id}'.format(id='id_example'),
@@ -166,7 +134,6 @@ class TestDefaultController(BaseTestCase):
   }
 }
         headers = { 
-            'x_authorization': 'x_authorization_example',
         }
         response = self.client.open(
             '/package/{id}'.format(id='id_example'),
@@ -188,7 +155,6 @@ class TestDefaultController(BaseTestCase):
 }
         query_string = [('offset', 'offset_example')]
         headers = { 
-            'x_authorization': 'x_authorization_example',
         }
         response = self.client.open(
             '/packages',
@@ -206,7 +172,6 @@ class TestDefaultController(BaseTestCase):
         
         """
         headers = { 
-            'x_authorization': 'x_authorization_example',
         }
         response = self.client.open(
             '/reset',

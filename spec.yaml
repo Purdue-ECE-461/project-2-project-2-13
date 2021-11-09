@@ -75,27 +75,13 @@ paths:
       operationId: PackagesList
       summary: Get packages
       description: Get any packages fitting the query.
-    parameters:
-    - name: X-Authorization
-      description: ""
-      schema:
-        $ref: '#/components/schemas/AuthenticationToken'
-      in: header
   /reset:
     summary: Reset registry
     delete:
       responses:
         "200":
           description: Registry is reset.
-        "401":
-          description: You do not have permission to reset the registry.
       operationId: RegistryReset
-    parameters:
-    - name: X-Authorization
-      description: ""
-      schema:
-        $ref: '#/components/schemas/AuthenticationToken'
-      in: header
   /package/{id}:
     summary: Interact with the package with this ID
     get:
@@ -168,11 +154,6 @@ paths:
         $ref: '#/components/schemas/PackageID'
       in: path
       required: true
-    - name: X-Authorization
-      description: ""
-      schema:
-        $ref: '#/components/schemas/AuthenticationToken'
-      in: header
   /package:
     summary: Create a version of a package
     description: "The \"ID\" field in the request body allows the user to use their\
@@ -198,13 +179,6 @@ paths:
         "400":
           description: Malformed request.
       operationId: PackageCreate
-    parameters:
-    - name: X-Authorization
-      description: ""
-      schema:
-        $ref: '#/components/schemas/AuthenticationToken'
-      in: header
-      required: true
   /package/{id}/rate:
     summary: Get the rating for this package.
     get:
@@ -226,39 +200,6 @@ paths:
         $ref: '#/components/schemas/PackageID'
       in: path
       required: true
-    - name: X-Authorization
-      description: ""
-      schema:
-        $ref: '#/components/schemas/AuthenticationToken'
-      in: header
-  /authenticate:
-    summary: Authenticate this user -- get an access token.
-    description: |-
-      If your system supports the authentication scheme described in the spec, then:
-
-      1. The obtained token should be provided to the other endpoints via the "X-Authorization" header.
-      2. The "Authorization" header is *required* in your system.
-
-      Otherwise, this endpoint should return HTTP 501 "Not implemented", and the "X-Authorization" header should be unused for the other endpoints.
-    put:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuthenticationRequest'
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthenticationToken'
-          description: Success.
-        "401":
-          description: Authentication failed (e.g. no such user or invalid password)
-        "501":
-          description: This system does not support authentication.
-      operationId: CreateAuthToken
   /package/byName/{name}:
     summary: Interact with the package with this name
     get:
@@ -307,11 +248,6 @@ paths:
         $ref: '#/components/schemas/PackageName'
       in: path
       required: true
-    - name: X-Authorization
-      description: ""
-      schema:
-        $ref: '#/components/schemas/AuthenticationToken'
-      in: header
 components:
   schemas:
     Error:
@@ -381,30 +317,6 @@ components:
           type: string
         JSProgram:
           description: A JavaScript program (for use with sensitive modules).
-          type: string
-    User:
-      description: ""
-      required:
-      - name
-      - isAdmin
-      type: object
-      properties:
-        name:
-          description: ""
-          type: string
-          example: Alfalfa
-        isAdmin:
-          description: Is this user an admin?
-          type: boolean
-    UserAuthenticationInfo:
-      description: Authentication info for a user
-      required:
-      - password
-      type: object
-      properties:
-        password:
-          description: "Password for a user. Per the spec, this should be a \"strong\"\
-            \ password."
           type: string
     PackageID:
       description: ""
@@ -485,23 +397,6 @@ components:
         - Names should only use typical "keyboard" characters.
         - The name "*" is reserved. See the `/packages` API for its meaning.
       type: string
-    AuthenticationToken:
-      description: "The spec permits you to use any token format you like. You could,\
-        \ for example, look into JSON Web Tokens (\"JWT\", pronounced \"jots\"): https://jwt.io."
-      type: string
-    AuthenticationRequest:
-      description: ""
-      required:
-      - User
-      - Secret
-      type: object
-      properties:
-        User:
-          $ref: '#/components/schemas/User'
-          description: ""
-        Secret:
-          $ref: '#/components/schemas/UserAuthenticationInfo'
-          description: ""
     SemverRange:
       description: ""
       type: string
@@ -526,9 +421,3 @@ components:
       description: Offset in pagination.
       type: string
       example: "1"
-  securitySchemes:
-    UserAndPasswordYieldsToken:
-      type: apiKey
-      description: Use the /authentication endpoint to obtain an authorization token.
-      name: X-Authorization
-      in: header
