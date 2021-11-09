@@ -264,6 +264,8 @@ paths:
       responses:
         "200":
           description: Registry is reset.
+        "401":
+          description: You do not have permission to reset the registry.
       x-openapi-router-controller: openapi_server.controllers.default_controller
     summary: Reset registry
 components:
@@ -421,15 +423,12 @@ components:
       description: One entry of the history of this package.
       example:
         Action: CREATE
-        User: '{}'
         PackageMetadata:
           Version: 1.2.3
           ID: ID
           Name: Name
         Date: 2000-01-23T04:56:07.000+00:00
       properties:
-        User:
-          $ref: '#/components/schemas/User'
         Date:
           description: Date of activity.
           format: date-time
@@ -449,7 +448,6 @@ components:
       - Action
       - Date
       - PackageMetadata
-      - User
       title: PackageHistoryEntry
       type: object
     PackageName:
