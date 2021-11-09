@@ -1,8 +1,9 @@
-from app import *
+from module_validator import *
 import re
 import sys
 import subprocess
-from rest import *
+from module_validator.rest import *
+import logging
 
 
 ### Python Functions For Test Suite ###
