@@ -6,12 +6,7 @@ import unittest
 from flask import json
 from six import BytesIO
 
-from src.openapi_server.models.error import Error  # noqa: E501
-from src.openapi_server.models.package import Package  # noqa: E501
-from src.openapi_server.models.package_history_entry import PackageHistoryEntry  # noqa: E501
-from src.openapi_server.models.package_metadata import PackageMetadata  # noqa: E501
-from src.openapi_server.models.package_query import PackageQuery  # noqa: E501
-from src.openapi_server.models.package_rating import PackageRating  # noqa: E501
+from src.openapi_server.models import *
 from src.openapi_server.test import BaseTestCase
 
 
@@ -23,7 +18,7 @@ class TestDefaultController(BaseTestCase):
 
         Delete all versions of this package.
         """
-        headers = { 
+        headers = {
         }
         response = self.client.open(
             '/package/byName/{name}'.format(name='name_example'),
@@ -35,9 +30,9 @@ class TestDefaultController(BaseTestCase):
     def test_package_by_name_get(self):
         """Test case for package_by_name_get
 
-        
+
         """
-        headers = { 
+        headers = {
         }
         response = self.client.open(
             '/package/byName/{name}'.format(name='name_example'),
@@ -47,24 +42,20 @@ class TestDefaultController(BaseTestCase):
                        'Response body is : ' + response.data.decode('utf-8'))
 
     def test_package_create(self):
-        """Test case for package_create
-
-        
-        """
+        """Test case for package_create"""
         package = {
-  "metadata" : {
-    "Version" : "1.2.3",
-    "ID" : "ID",
-    "Name" : "Name"
-  },
-  "data" : {
-    "Content" : "Content",
-    "JSProgram" : "JSProgram",
-    "URL" : "URL"
-  }
-}
-        headers = { 
+            "metadata": {
+                "Version": "1.2.3",
+                "ID": "ID",
+                "Name": "Name"
+            },
+            "data": {
+                "Content": "Content",
+                "JSProgram": "JSProgram",
+                "URL": "URL"
+            }
         }
+        headers = {}
         response = self.client.open(
             '/package',
             method='POST',
@@ -79,7 +70,7 @@ class TestDefaultController(BaseTestCase):
 
         Delete this version of the package.
         """
-        headers = { 
+        headers = {
         }
         response = self.client.open(
             '/package/{id}'.format(id='id_example'),
@@ -91,9 +82,9 @@ class TestDefaultController(BaseTestCase):
     def test_package_rate(self):
         """Test case for package_rate
 
-        
+
         """
-        headers = { 
+        headers = {
         }
         response = self.client.open(
             '/package/{id}/rate'.format(id='id_example'),
@@ -105,9 +96,9 @@ class TestDefaultController(BaseTestCase):
     def test_package_retrieve(self):
         """Test case for package_retrieve
 
-        
+
         """
-        headers = { 
+        headers = {
         }
         response = self.client.open(
             '/package/{id}'.format(id='id_example'),
@@ -122,18 +113,18 @@ class TestDefaultController(BaseTestCase):
         Update this version of the package.
         """
         package = {
-  "metadata" : {
-    "Version" : "1.2.3",
-    "ID" : "ID",
-    "Name" : "Name"
-  },
-  "data" : {
-    "Content" : "Content",
-    "JSProgram" : "JSProgram",
-    "URL" : "URL"
-  }
-}
-        headers = { 
+            "metadata": {
+                "Version": "1.2.3",
+                "ID": "ID",
+                "Name": "Name"
+            },
+            "data": {
+                "Content": "Content",
+                "JSProgram": "JSProgram",
+                "URL": "URL"
+            }
+        }
+        headers = {
         }
         response = self.client.open(
             '/package/{id}'.format(id='id_example'),
@@ -150,11 +141,11 @@ class TestDefaultController(BaseTestCase):
         Get packages
         """
         package_query = {
-  "Version" : "Exact (1.2.3)\nBounded range (1.2.3-2.1.0)\nCarat (^1.2.3)\nTilde (~1.2.0)",
-  "Name" : "Name"
-}
+            "Version": "Exact (1.2.3)\nBounded range (1.2.3-2.1.0)\nCarat (^1.2.3)\nTilde (~1.2.0)",
+            "Name": "Name"
+        }
         query_string = [('offset', 'offset_example')]
-        headers = { 
+        headers = {
         }
         response = self.client.open(
             '/packages',
@@ -169,9 +160,9 @@ class TestDefaultController(BaseTestCase):
     def test_registry_reset(self):
         """Test case for registry_reset
 
-        
+
         """
-        headers = { 
+        headers = {
         }
         response = self.client.open(
             '/reset',
