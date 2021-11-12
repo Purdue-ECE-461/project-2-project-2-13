@@ -1,0 +1,1 @@
+openapi-generator generate -g python-flask -i spec.yaml -o src/

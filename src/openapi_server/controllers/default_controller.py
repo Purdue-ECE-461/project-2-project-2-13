@@ -1,13 +1,13 @@
 import connexion
 import six
 
-from src.openapi_server.models.error import Error  # noqa: E501
-from src.openapi_server.models.package import Package  # noqa: E501
-from src.openapi_server.models.package_history_entry import PackageHistoryEntry  # noqa: E501
-from src.openapi_server.models.package_metadata import PackageMetadata  # noqa: E501
-from src.openapi_server.models.package_query import PackageQuery  # noqa: E501
-from src.openapi_server.models.package_rating import PackageRating  # noqa: E501
-from src.openapi_server import util
+from openapi_server.models.error import Error  # noqa: E501
+from openapi_server.models.package import Package  # noqa: E501
+from openapi_server.models.package_history_entry import PackageHistoryEntry  # noqa: E501
+from openapi_server.models.package_metadata import PackageMetadata  # noqa: E501
+from openapi_server.models.package_query import PackageQuery  # noqa: E501
+from openapi_server.models.package_rating import PackageRating  # noqa: E501
+from openapi_server import util
 
 
 def package_by_name_delete(name):  # noqa: E501
