@@ -8,16 +8,7 @@
             "name": "run",
             "type": "python",
             "request": "launch",
-            "module": "flask",
-            "env": {
-                "FLASK_APP": "src/__main__.py",
-                "FLASK_ENV": "development"
-            },
-            "args": [
-                "run",
-                "--no-debugger"
-            ],
-            "jinja": true
+            "module": "openapi_server"
         }
     ]
 }
