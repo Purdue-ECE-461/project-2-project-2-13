@@ -1,14 +1,6 @@
 {
-    "python.testing.pytestArgs": [
-        "./"
-    ],
-    "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.testing.unittestArgs": [
-        "-v",
-        "-s",
-        "./src",
-        "-p",
-        "test*.py"
+    "python.testing.pytestArgs": [
+        "src"
     ]
 }
