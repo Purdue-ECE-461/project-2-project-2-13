@@ -8,6 +8,7 @@
             "name": "run",
             "type": "python",
             "request": "launch",
+            "justMyCode": false,
             "module": "openapi_server"
         }
     ]

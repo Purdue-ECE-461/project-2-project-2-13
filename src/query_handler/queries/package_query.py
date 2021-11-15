@@ -13,6 +13,9 @@ class PackageQuery(Query):
         package: Package = self.resource
         operation = self.operation
         if isinstance(operation, CreateOperation):
-            db.set('package', package.metadata.id, json.dumps(package.to_dict()))
+            db.set('package', package.metadata.ID, json.dumps(package.to_dict()))
+            return package
+        elif isinstance(operation, ReadOperation):
+            return db.get('package', package.metadata.ID)
         else:
             raise TypeError(f'unexpected operation type `{type(operation)}`')

@@ -1,13 +1,16 @@
 import connexion
 import six
-
+from openapi_server import util
 from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.package import Package  # noqa: E501
-from openapi_server.models.package_history_entry import PackageHistoryEntry  # noqa: E501
-from openapi_server.models.package_metadata import PackageMetadata  # noqa: E501
-from openapi_server.models.package_query import PackageQuery  # noqa: E501
+from openapi_server.models.package_history_entry import \
+    PackageHistoryEntry  # noqa: E501
+from openapi_server.models.package_metadata import \
+    PackageMetadata  # noqa: E501
 from openapi_server.models.package_rating import PackageRating  # noqa: E501
-from openapi_server import util
+from query_handler.operations.create_operation import CreateOperation
+from query_handler.operations.read_operation import ReadOperation
+from query_handler.queries.package_query import PackageQuery
 
 
 def package_by_name_delete(name):  # noqa: E501
@@ -36,19 +39,20 @@ def package_by_name_get(name):  # noqa: E501
     return 'do some magic!'
 
 
-def package_create(package):  # noqa: E501
+def package_create(package):
     """package_create
-
-     # noqa: E501
-
     :param package: 
     :type package: dict | bytes
 
     :rtype: PackageMetadata
     """
     if connexion.request.is_json:
-        package = Package.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+        package = Package.from_dict(connexion.request.get_json())
+        createQuery = PackageQuery(CreateOperation(), package)
+        response: Package = createQuery.execute()
+        return response.metadata
+    else:
+        return None
 
 
 def package_delete(id):  # noqa: E501
@@ -87,7 +91,10 @@ def package_retrieve(id):  # noqa: E501
 
     :rtype: Package
     """
-    return 'do some magic!'
+    package = Package(PackageMetadata(id=id))
+    readQuery = PackageQuery(ReadOperation(), package)
+    response: Package = readQuery.execute()
+    return response
 
 
 def package_update(id, package):  # noqa: E501

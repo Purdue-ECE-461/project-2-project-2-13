@@ -10,8 +10,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG)
     app = connexion.App(__name__, specification_dir='./openapi/')
     app.app.json_encoder = encoder.JSONEncoder
-    app.add_api('openapi.yaml',
-                arguments={'title': 'ECE 461 - Fall 2021 - Project 2'})
+    app.add_api('openapi.yaml')
     app.run(port=8080, debug=True)
     
 

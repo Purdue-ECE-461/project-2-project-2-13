@@ -13,12 +13,7 @@ class TestPackage(BaseTestCase):
     def test_package_create(self):
         expected = Package(PackageMetadata('example name', '1.2.3', '0'), PackageData('example content', 'example URL', 'example JS_Program'))
         query = PackageQuery(CreateOperation(), expected)
-        query.execute()
-        dict = json.loads(db.get('package', expected.metadata.id))
-        actual = Package(
-            PackageMetadata(dict['metadata']['name'], dict['metadata']['version'], dict['metadata']['id']),
-            PackageData(dict['data']['content'], dict['data']['url'], dict['data']['js_program'])
-        )
+        actual = query.execute()
         assert actual == expected
     def test_package_read(self):
         pass
