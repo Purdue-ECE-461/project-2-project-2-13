@@ -2,4 +2,4 @@ name: "Flask GitHub actions"
 description: "Flask action"
 runs:
   using: "docker"
-  image: "../Dockerfile"
+  image: "../src/Dockerfile"
