@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-
+    name: main workflow
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
@@ -18,5 +18,9 @@ jobs:
     steps:
       - name: community-developed Action
         uses: actions/checkout@v1
+      - name: Test with pytest
+        run: |
+          pip install pytest
+          pytest
       - name: Setup docker
         uses: ./actions

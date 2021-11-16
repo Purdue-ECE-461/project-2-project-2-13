@@ -4,9 +4,11 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 COPY requirements.txt /usr/src/app/
+COPY test-requirements.txt /usr/src/app/
 
 RUN python -m pip install --upgrade pip
 RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r test-requirements.txt
 
 COPY . /usr/src/app
 
