@@ -10,6 +10,7 @@ from openapi_server.models.package_metadata import \
 from openapi_server.models.package_query import PackageQuery  # noqa: E501
 from openapi_server.models.package_rating import PackageRating  # noqa: E501
 from query_handler.operations.create_operation import CreateOperation
+from query_handler.operations.delete_operation import DeleteOperation
 from query_handler.operations.read_operation import ReadOperation
 from query_handler.queries.package_query import PackageQuery as PackageQueryDb
 
@@ -54,17 +55,18 @@ def package_create():
         return None
 
 
-def package_delete(id):  # noqa: E501
+def package_delete(id_):
     """Delete this version of the package.
-
-     # noqa: E501
 
     :param id: Package ID
     :type id: str
 
     :rtype: None
     """
-    return 'do some magic!'
+    package = Package(PackageMetadata(id=id_))
+    query = PackageQueryDb(DeleteOperation(), package)
+    query.execute()
+    return 'Package is deleted.'
 
 
 def package_rate(id):  # noqa: E501
