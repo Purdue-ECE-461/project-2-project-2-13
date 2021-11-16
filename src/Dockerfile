@@ -5,7 +5,9 @@ WORKDIR /usr/src/app
 
 COPY requirements.txt /usr/src/app/
 
+RUN python -m pip install --upgrade pip
 RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install ./src/
 
 COPY . /usr/src/app
 
