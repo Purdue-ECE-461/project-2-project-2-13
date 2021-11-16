@@ -14,7 +14,7 @@
 
 runtime: python
 env: flex
-entrypoint: python3 -m openapi_server
+entrypoint: pip3 install -e src/ && python3 -m openapi_server
 
 runtime_config:
   python_version: 3
