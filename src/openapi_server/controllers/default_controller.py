@@ -10,7 +10,7 @@ from openapi_server.models.package_metadata import \
 from openapi_server.models.package_query import PackageQuery  # noqa: E501
 from openapi_server.models.package_rating import PackageRating  # noqa: E501
 from query_handler.operations.create_operation import CreateOperation
-
+from query_handler.operations.read_operation import ReadOperation
 from query_handler.queries.package_query import PackageQuery as PackageQueryDb
 
 
@@ -47,8 +47,8 @@ def package_create():
     """
     if connexion.request.is_json:
         package = Package.from_dict(connexion.request.get_json())
-        createQuery = PackageQueryDb(CreateOperation(), package)
-        response: Package = createQuery.execute()
+        query = PackageQueryDb(CreateOperation(), package)
+        response: Package = query.execute()
         return response.metadata
     else:
         return None
@@ -80,7 +80,7 @@ def package_rate(id):  # noqa: E501
     return 'do some magic!'
 
 
-def package_retrieve(id):  # noqa: E501
+def package_retrieve(id_):
     """package_retrieve
 
     Return this package. # noqa: E501
@@ -90,7 +90,10 @@ def package_retrieve(id):  # noqa: E501
 
     :rtype: Package
     """
-    return 'do some magic!'
+    package = Package(PackageMetadata(id=id_))
+    query = PackageQueryDb(ReadOperation(), package)
+    response: Package = query.execute()
+    return response
 
 
 def package_update(id, package):  # noqa: E501

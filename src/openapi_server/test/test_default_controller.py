@@ -13,6 +13,8 @@ from openapi_server.models.package_metadata import PackageMetadata  # noqa: E501
 from openapi_server.models.package_query import PackageQuery  # noqa: E501
 from openapi_server.models.package_rating import PackageRating  # noqa: E501
 from openapi_server.test import BaseTestCase
+from query_handler.queries.package_query import PackageQuery as PackageQueryDb
+from query_handler.operations.create_operation import CreateOperation
 
 
 class TestDefaultController(BaseTestCase):
@@ -52,17 +54,17 @@ class TestDefaultController(BaseTestCase):
         
         """
         package = {
-  "metadata" : {
-    "Version" : "1.2.3",
-    "ID" : "ID",
-    "Name" : "Name"
-  },
-  "data" : {
-    "Content" : "Content",
-    "JSProgram" : "JSProgram",
-    "URL" : "URL"
-  }
-}
+            "metadata" : {
+                "Version" : "1.2.3",
+                "ID" : "ID",
+                "Name" : "Name"
+            },
+            "data" : {
+                "Content" : "Content",
+                "JSProgram" : "JSProgram",
+                "URL" : "URL"
+            }
+        }
         headers = { 
         }
         response = self.client.open(
@@ -107,10 +109,27 @@ class TestDefaultController(BaseTestCase):
 
         
         """
+        # Insert the package
+        package = Package.from_dict(
+            {
+                "metadata" : {
+                    "Version" : "1.2.3",
+                    "ID" : "ID",
+                    "Name" : "Name"
+                },
+                "data" : {
+                    "Content" : "Content",
+                    "JSProgram" : "JSProgram",
+                    "URL" : "URL"
+                }
+            }
+        )
+        PackageQueryDb(CreateOperation(), package).execute()
+
         headers = { 
         }
         response = self.client.open(
-            '/package/{id}'.format(id='id_example'),
+            '/package/{id}'.format(id='ID'),
             method='GET',
             headers=headers)
         self.assert200(response,
