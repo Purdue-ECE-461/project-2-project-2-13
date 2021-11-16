@@ -12,7 +12,7 @@ def main():
     app.app.json_encoder = encoder.JSONEncoder
     app.add_api('openapi.yaml')
     app.run(port=8080, debug=True)
-    
+
 
 if __name__ == '__main__':
     main()

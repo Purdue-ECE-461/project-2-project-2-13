@@ -7,10 +7,11 @@ from openapi_server.models.package_history_entry import \
     PackageHistoryEntry  # noqa: E501
 from openapi_server.models.package_metadata import \
     PackageMetadata  # noqa: E501
+from openapi_server.models.package_query import PackageQuery  # noqa: E501
 from openapi_server.models.package_rating import PackageRating  # noqa: E501
 from query_handler.operations.create_operation import CreateOperation
-from query_handler.operations.read_operation import ReadOperation
-from query_handler.queries.package_query import PackageQuery
+
+from query_handler.queries.package_query import PackageQuery as PackageQueryDb
 
 
 def package_by_name_delete(name):  # noqa: E501
@@ -39,16 +40,14 @@ def package_by_name_get(name):  # noqa: E501
     return 'do some magic!'
 
 
-def package_create(package):
+def package_create():
     """package_create
-    :param package: 
-    :type package: dict | bytes
 
     :rtype: PackageMetadata
     """
     if connexion.request.is_json:
         package = Package.from_dict(connexion.request.get_json())
-        createQuery = PackageQuery(CreateOperation(), package)
+        createQuery = PackageQueryDb(CreateOperation(), package)
         response: Package = createQuery.execute()
         return response.metadata
     else:
@@ -91,10 +90,7 @@ def package_retrieve(id):  # noqa: E501
 
     :rtype: Package
     """
-    package = Package(PackageMetadata(id=id))
-    readQuery = PackageQuery(ReadOperation(), package)
-    response: Package = readQuery.execute()
-    return response
+    return 'do some magic!'
 
 
 def package_update(id, package):  # noqa: E501
