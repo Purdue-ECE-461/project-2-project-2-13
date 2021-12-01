@@ -3,15 +3,14 @@ import six
 from openapi_server import util
 from openapi_server.models.error import Error
 from openapi_server.models.package import Package
-from openapi_server.models.package_history_entry import \
-    PackageHistoryEntry
-from openapi_server.models.package_metadata import \
-    PackageMetadata
+from openapi_server.models.package_history_entry import PackageHistoryEntry
+from openapi_server.models.package_metadata import PackageMetadata
 from openapi_server.models.package_query import PackageQuery
 from openapi_server.models.package_rating import PackageRating
 from query_handler.operations.create_operation import CreateOperation
 from query_handler.operations.delete_operation import DeleteOperation
 from query_handler.operations.read_operation import ReadOperation
+from query_handler.operations.update_operation import UpdateOperation
 from query_handler.queries.package_query import PackageQuery as PackageQueryDb
 
 
@@ -110,7 +109,9 @@ def package_update(id_):
     """
     if connexion.request.is_json:
         package = Package.from_dict(connexion.request.get_json())
-    return 'do some magic!'
+        query = PackageQueryDb(UpdateOperation(), package)
+        response: Package = query.execute()
+        return None, 200
 
 
 def packages_list(offset=0):

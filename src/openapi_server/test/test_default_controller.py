@@ -146,7 +146,7 @@ class TestDefaultController(BaseTestCase):
         PackageQueryDb(CreateOperation(), package).execute()
 
         response = self.client.open(
-            '/package/{id}'.format(id='ID'),
+            '/package/{id}'.format(id=package.metadata.id),
             method='GET',
             headers={})
         self.assert200(response,
@@ -173,8 +173,7 @@ class TestDefaultController(BaseTestCase):
         }
         PackageQueryDb(CreateOperation(), Package.from_dict(package)).execute()
         # update the package
-        newPackage = package.copy()
-        newPackage['data'] = {
+        package['data'] = {
                 "Content" : "NewContent",
                 "JSProgram" : "NewJSProgram",
                 "URL" : "NewURL"
@@ -187,6 +186,9 @@ class TestDefaultController(BaseTestCase):
             content_type='application/json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
+        # get package from DB
+        data = PackageQueryDb(ReadOperation(), Package.from_dict(package)).execute().to_dict()
+        assert(package == data)
 
     def test_packages_list(self):
         """Test case for packages_list
