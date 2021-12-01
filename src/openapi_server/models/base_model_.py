@@ -45,7 +45,9 @@ class Model(object):
                     value.items()
                 ))
             else:
-                result[attr] = value
+                # use attribute map naming where possible
+                key = self.attribute_map[attr] if attr in self.attribute_map else attr
+                result[key] = value
 
         return result
 

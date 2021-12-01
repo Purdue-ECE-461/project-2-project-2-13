@@ -13,11 +13,13 @@ class PackageQuery(Query):
         package: Package = self.resource
         operation = self.operation
         if isinstance(operation, CreateOperation):
-            db.set('package', package.metadata.id, json.dumps(package.to_dict()))
+            db.set('package', package.metadata.id, package.to_dict())
             return package
         elif isinstance(operation, ReadOperation):
-            return db.get('package', package.metadata.id)
+            data = db.get('package', package.metadata.id)
+            return Package.from_dict(data)
         elif isinstance(operation, DeleteOperation):
-            return db.set('package', package.metadata.id, None)
+            data = db.set('package', package.metadata.id, None)
+            return None
         else:
             raise TypeError(f'unexpected operation type `{type(operation)}`')

@@ -57,13 +57,13 @@ class TestDefaultController(BaseTestCase):
         package = {
             "metadata" : {
                 "Version" : "1.2.3",
-                "ID" : "ID",
-                "Name" : "Name"
+                "ID" : "id_example",
+                "Name" : "name_example"
             },
             "data" : {
-                "Content" : "Content",
-                "JSProgram" : "JSProgram",
-                "URL" : "URL"
+                "Content" : "content_example",
+                "JSProgram" : "jsprogram_example",
+                "URL" : "url_example"
             }
         }
         response = self.client.open(
@@ -75,7 +75,7 @@ class TestDefaultController(BaseTestCase):
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
         # get package from DB
-        data = PackageQueryDb(ReadOperation(), Package.from_dict(package)).execute()
+        data = PackageQueryDb(ReadOperation(), Package.from_dict(package)).execute().to_dict()
         assert(package == data)
 
     def test_package_delete(self):
