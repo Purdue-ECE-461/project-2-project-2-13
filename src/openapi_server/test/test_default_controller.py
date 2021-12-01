@@ -6,12 +6,12 @@ import unittest
 from flask import json
 from six import BytesIO
 
-from openapi_server.models.error import Error  # noqa: E501
-from openapi_server.models.package import Package  # noqa: E501
-from openapi_server.models.package_history_entry import PackageHistoryEntry  # noqa: E501
-from openapi_server.models.package_metadata import PackageMetadata  # noqa: E501
-from openapi_server.models.package_query import PackageQuery  # noqa: E501
-from openapi_server.models.package_rating import PackageRating  # noqa: E501
+from openapi_server.models.error import Error
+from openapi_server.models.package import Package
+from openapi_server.models.package_history_entry import PackageHistoryEntry
+from openapi_server.models.package_metadata import PackageMetadata
+from openapi_server.models.package_query import PackageQuery
+from openapi_server.models.package_rating import PackageRating
 from openapi_server.test import BaseTestCase
 from query_handler.queries.package_query import PackageQuery as PackageQueryDb
 from query_handler.operations.create_operation import CreateOperation
