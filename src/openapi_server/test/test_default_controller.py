@@ -15,6 +15,7 @@ from openapi_server.models.package_rating import PackageRating  # noqa: E501
 from openapi_server.test import BaseTestCase
 from query_handler.queries.package_query import PackageQuery as PackageQueryDb
 from query_handler.operations.create_operation import CreateOperation
+from query_handler.operations.read_operation import ReadOperation
 
 
 class TestDefaultController(BaseTestCase):
@@ -65,30 +66,48 @@ class TestDefaultController(BaseTestCase):
                 "URL" : "URL"
             }
         }
-        headers = { 
-        }
         response = self.client.open(
             '/package',
             method='POST',
-            headers=headers,
+            headers={},
             data=json.dumps(package),
             content_type='application/json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
+        # get package from DB
+        data = PackageQueryDb(ReadOperation(), Package.from_dict(package)).execute()
+        assert(package == data)
 
     def test_package_delete(self):
         """Test case for package_delete
 
         Delete this version of the package.
         """
-        headers = { 
+        # insert package into DB
+        package = {
+            "metadata" : {
+                "Version" : "1.2.3",
+                "ID" : "ID",
+                "Name" : "Name"
+            },
+            "data" : {
+                "Content" : "Content",
+                "JSProgram" : "JSProgram",
+                "URL" : "URL"
+            }
         }
+        PackageQueryDb(CreateOperation(), Package.from_dict(package)).execute()
+        # delete the package
         response = self.client.open(
-            '/package/{id}'.format(id='id_example'),
+            '/package/{id}'.format(id=package['metadata']['ID']),
             method='DELETE',
-            headers=headers)
+            headers={})
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
+        # try to get package from DB
+        data = PackageQueryDb(ReadOperation(), Package.from_dict(package)).execute()
+        assert(data == None)
+
 
     def test_package_rate(self):
         """Test case for package_rate
@@ -126,42 +145,48 @@ class TestDefaultController(BaseTestCase):
         )
         PackageQueryDb(CreateOperation(), package).execute()
 
-        headers = { 
-        }
         response = self.client.open(
             '/package/{id}'.format(id='ID'),
             method='GET',
-            headers=headers)
+            headers={})
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
+        
 
     def test_package_update(self):
         """Test case for package_update
 
         Update this version of the package.
         """
+        # insert the package
         package = {
-  "metadata" : {
-    "Version" : "1.2.3",
-    "ID" : "ID",
-    "Name" : "Name"
-  },
-  "data" : {
-    "Content" : "Content",
-    "JSProgram" : "JSProgram",
-    "URL" : "URL"
-  }
-}
-        headers = { 
+            "metadata" : {
+                "Version" : "1.2.3",
+                "ID" : "ID",
+                "Name" : "Name"
+            },
+            "data" : {
+                "Content" : "Content",
+                "JSProgram" : "JSProgram",
+                "URL" : "URL"
+            }
         }
+        PackageQueryDb(CreateOperation(), Package.from_dict(package)).execute()
+        # update the package
+        newPackage = package.copy()
+        newPackage['data'] = {
+                "Content" : "NewContent",
+                "JSProgram" : "NewJSProgram",
+                "URL" : "NewURL"
+            }
         response = self.client.open(
-            '/package/{id}'.format(id='id_example'),
+            '/package/{id}'.format(id=package['metadata']['ID']),
             method='PUT',
-            headers=headers,
+            headers={},
             data=json.dumps(package),
             content_type='application/json')
-        # self.assert200(response,
-        #                'Response body is : ' + response.data.decode('utf-8'))
+        self.assert200(response,
+                       'Response body is : ' + response.data.decode('utf-8'))
 
     def test_packages_list(self):
         """Test case for packages_list
