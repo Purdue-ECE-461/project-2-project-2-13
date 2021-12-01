@@ -69,7 +69,7 @@ def package_delete(id_):
     return 'Package is deleted.'
 
 
-def package_rate(id):  # noqa: E501
+def package_rate(id_):  # noqa: E501
     """package_rate
 
      # noqa: E501
@@ -98,15 +98,13 @@ def package_retrieve(id_):
     return response
 
 
-def package_update(id, package):  # noqa: E501
+def package_update(id_):  # noqa: E501
     """Update this version of the package.
 
     The name, version, and ID must match.  The package contents (from PackageData) will replace the previous contents. # noqa: E501
 
     :param id: 
     :type id: str
-    :param package: 
-    :type package: dict | bytes
 
     :rtype: None
     """
@@ -115,7 +113,7 @@ def package_update(id, package):  # noqa: E501
     return 'do some magic!'
 
 
-def packages_list(package_query, offset=None):  # noqa: E501
+def packages_list(offset=None):  # noqa: E501
     """Get packages
 
     Get any packages fitting the query. # noqa: E501
