@@ -2,7 +2,7 @@
 openapi: 3.0.2
 info:
   title: ECE 461 - Fall 2021 - Project 2
-  version: 2.0.0
+  version: 1.0.0
   description: "API for ECE 461/Fall 2021/Project 2: A Trustworthy Module Registry"
   termsOfService: http://swagger.io/terms/
   contact:
@@ -21,7 +21,7 @@ paths:
       If you want to enumerate all packages, provide an array with a single PackageQuery whose name is "*".
 
       The response is paginated; the response header includes the offset to use in the next query.
-    post:
+    get:
       requestBody:
         content:
           application/json:
@@ -236,10 +236,10 @@ paths:
   #   description: |-
   #     If your system supports the authentication scheme described in the spec, then:
 
-  #     1. The obtained token should be provided to the other endpoints via the "X-Authorization" header.
-  #     2. The "Authorization" header is *required* in your system.
+#     1. The obtained token should be provided to the other endpoints via the "X-Authorization" header.
+#     2. The "Authorization" header is *required* in your system.
 
-  #     Otherwise, this endpoint should return HTTP 501 "Not implemented", and the "X-Authorization" header should be unused for the other endpoints.
+#     Otherwise, this endpoint should return HTTP 501 "Not implemented", and the "X-Authorization" header should be unused for the other endpoints.
   #   put:
   #     requestBody:
   #       content:
@@ -449,7 +449,7 @@ components:
             \ a specific major+minor version, e.g. version 2.3.X of a package. (If\
             \ there are zero dependencies, they should receive a 1.0 rating. If there\
             \ are two dependencies, one pinned to this degree, then they should receive\
-            \ a Â½ = 0.5 rating)."
+            \ a ½ = 0.5 rating)."
           type: number
     PackageHistoryEntry:
       description: One entry of the history of this package.
@@ -532,4 +532,3 @@ components:
   #     description: Use the /authentication endpoint to obtain an authorization token.
   #     name: X-Authorization
   #     in: header
-  
