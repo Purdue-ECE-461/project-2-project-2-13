@@ -11,26 +11,29 @@ from query_handler.queries.base_query_ import Query
 
 class PackageQuery(Query):
     def execute(self):
-        package: Package = self.resource
+        resource = self.resource
         operation = self.operation
         if isinstance(operation, CreateOperation):
-            db.set('package', package.metadata.id, package.to_dict())
-            return package
+            db.set('package', resource.metadata.id, resource.to_dict())
+            return resource
         elif isinstance(operation, UpdateOperation):
             # get current package
-            data = db.get('package', package.metadata.id)
+            data = db.get('package', resource.metadata.id)
             if data is None:
                 return None
             current = Package.from_dict(data)
             # replace package data with new data
-            current.data = package.data
-            db.set('package', package.metadata.id, current.to_dict())
+            current.data = resource.data
+            db.set('package', resource.metadata.id, current.to_dict())
             return current
         elif isinstance(operation, ReadOperation):
-            data = db.get('package', package.metadata.id)
+            data = db.get('package', resource.metadata.id)
             return None if data is None else Package.from_dict(data)
         elif isinstance(operation, DeleteOperation):
-            data = db.set('package', package.metadata.id, None)
+            if (resource is None):
+                db.reset('package')
+            else:
+                db.set('package', resource.metadata.id, None)
             return None
         else:
             raise TypeError(f'unexpected operation type `{type(operation)}`')

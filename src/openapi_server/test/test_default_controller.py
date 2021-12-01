@@ -215,16 +215,32 @@ class TestDefaultController(BaseTestCase):
     def test_registry_reset(self):
         """Test case for registry_reset
 
-        
+
         """
-        headers = { 
+        # insert package into DB
+        package = {
+            "metadata" : {
+                "Version" : "1.2.3",
+                "ID" : "ID",
+                "Name" : "Name"
+            },
+            "data" : {
+                "Content" : "Content",
+                "JSProgram" : "JSProgram",
+                "URL" : "URL"
+            }
         }
+        PackageQueryDb(CreateOperation(), Package.from_dict(package)).execute()
+        # send the request
         response = self.client.open(
             '/reset',
             method='DELETE',
-            headers=headers)
+            headers={})
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
+        # try to get package from DB
+        data = PackageQueryDb(ReadOperation(), Package.from_dict(package)).execute()
+        assert (data == None)
 
 
 if __name__ == '__main__':

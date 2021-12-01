@@ -23,3 +23,9 @@ def set(table, key, value):
         DB[table][key] = value
     else:
         logging.error('Unable to find table `{table}`')
+
+def reset(table):
+    if table in DB:
+        DB[table] = {}
+    else:
+        logging.error('Unable to find table `{table}`')

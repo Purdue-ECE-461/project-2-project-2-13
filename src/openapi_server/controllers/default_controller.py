@@ -131,10 +131,8 @@ def packages_list(offset=0):
 
 def registry_reset():
     """registry_reset
-
-   
-
-
     :rtype: None
     """
-    return 'do some magic!'
+    # Reset the DB
+    PackageQueryDb(DeleteOperation()).execute()
+    return None, 200
