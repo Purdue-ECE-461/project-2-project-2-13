@@ -19,3 +19,4 @@ class TestDbPackage(BaseTestCase):
         actual = db.DB['package'][id]
         
         assert actual == expected
+        
