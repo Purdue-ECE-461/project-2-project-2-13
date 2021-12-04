@@ -3,12 +3,15 @@ import logging
 
 # memory-only database
 DB = {
-    'package': {}
+    'package': {
+    }
 }
 
-def get(table, key):
+def get(table, key=None):
     if table in DB:
-        if key in DB[table]:
+        if key == None:
+            return DB[table]
+        elif key in DB[table]:
             return DB[table][key]
         else:
             logging.error('Unable to find key `{key}` in table `{table}`')

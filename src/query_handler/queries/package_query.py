@@ -1,10 +1,13 @@
 import json
+import logging
 
 import db
 from openapi_server.models.package import Package
+from openapi_server.models.package_metadata import PackageMetadata
 from query_handler.operations.create_operation import CreateOperation
 from query_handler.operations.delete_operation import DeleteOperation
 from query_handler.operations.read_operation import ReadOperation
+from query_handler.operations.search_operation import SearchOperation
 from query_handler.operations.update_operation import UpdateOperation
 from query_handler.queries.base_query_ import Query
 
@@ -29,6 +32,18 @@ class PackageQuery(Query):
         elif isinstance(operation, ReadOperation):
             data = db.get('package', resource.metadata.id)
             return None if data is None else Package.from_dict(data)
+        elif isinstance(operation, SearchOperation):
+            if (operation.method == 'byName'):
+                name = operation.value
+                packages = db.get('package')
+                for id in packages:
+                    temp = Package.from_dict(packages[id])
+                    if (temp.metadata.name == name):
+                        return PackageMetadata.from_dict(packages[id]['metadata'])
+                logging.error(f'package with name \'{name}\' not found')
+            else:
+                logging.error(f'operation method \'{operation.method}\' is not supported')
+            return None
         elif isinstance(operation, DeleteOperation):
             if (resource is None):
                 db.reset('package')

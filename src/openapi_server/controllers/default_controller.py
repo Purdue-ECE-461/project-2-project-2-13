@@ -1,5 +1,7 @@
+from typing import List
 import connexion
 import six
+import datetime
 from openapi_server import util
 from openapi_server.models.error import Error
 from openapi_server.models.package import Package
@@ -10,6 +12,7 @@ from openapi_server.models.package_rating import PackageRating
 from query_handler.operations.create_operation import CreateOperation
 from query_handler.operations.delete_operation import DeleteOperation
 from query_handler.operations.read_operation import ReadOperation
+from query_handler.operations.search_operation import SearchOperation
 from query_handler.operations.update_operation import UpdateOperation
 from query_handler.queries.package_query import PackageQuery as PackageQueryDb
 
@@ -37,7 +40,13 @@ def package_by_name_get(name):
 
     :rtype: List[PackageHistoryEntry]
     """
-    return 'do some magic!'
+    query = PackageQueryDb(SearchOperation('byName', name))
+    response = query.execute()
+    if (response):
+        data = [PackageHistoryEntry(datetime.date.today(), response, 'CREATE')]
+        return data, 200
+    else:
+        return None, 400
 
 
 def package_create():
