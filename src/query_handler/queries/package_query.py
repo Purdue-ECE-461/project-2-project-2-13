@@ -41,6 +41,14 @@ class PackageQuery(Query):
                     if (temp.metadata.name == name):
                         return PackageMetadata.from_dict(packages[id]['metadata'])
                 logging.error(f'package with name \'{name}\' not found')
+            elif (operation.method == 'list'):
+                offset = int(operation.value)
+                results = []
+                packages = db.get('package')
+                for idx, id in enumerate(packages, offset):
+                    if (len(results) < 10):
+                        results.append(PackageMetadata.from_dict(packages[id]['metadata']))
+                return results
             else:
                 logging.error(f'operation method \'{operation.method}\' is not supported')
             return None

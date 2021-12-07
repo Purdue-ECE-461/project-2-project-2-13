@@ -1,11 +1,11 @@
 # coding: utf-8
 
 from __future__ import absolute_import
+
 import unittest
 
+import db
 from flask import json
-from six import BytesIO
-
 from openapi_server.models.error import Error
 from openapi_server.models.package import Package
 from openapi_server.models.package_history_entry import PackageHistoryEntry
@@ -13,9 +13,10 @@ from openapi_server.models.package_metadata import PackageMetadata
 from openapi_server.models.package_query import PackageQuery
 from openapi_server.models.package_rating import PackageRating
 from openapi_server.test import BaseTestCase
-from query_handler.queries.package_query import PackageQuery as PackageQueryDb
 from query_handler.operations.create_operation import CreateOperation
 from query_handler.operations.read_operation import ReadOperation
+from query_handler.queries.package_query import PackageQuery as PackageQueryDb
+from six import BytesIO
 
 
 class TestDefaultController(BaseTestCase):
@@ -211,7 +212,7 @@ class TestDefaultController(BaseTestCase):
                 "URL" : "NewURL"
             }
         response = self.client.open(
-            '/package/{id}'.format(id=package['metadata']['ID']),
+            f"/package/{package['metadata']['ID']}",
             method='PUT',
             headers={},
             data=json.dumps(package),
@@ -227,22 +228,40 @@ class TestDefaultController(BaseTestCase):
 
         Get packages
         """
-        package_query = {
-  "Version" : "Exact (1.2.3)\nBounded range (1.2.3-2.1.0)\nCarat (^1.2.3)\nTilde (~1.2.0)",
-  "Name" : "Name"
-}
-        query_string = [('offset', 'offset_example')]
-        headers = { 
-        }
+        # insert packages
+        for i in range(0, 5):
+            PackageQueryDb(CreateOperation(), Package.from_dict({
+                "metadata" : {
+                    "Version" : "1.2.3",
+                    "ID" : f"package_{i}",
+                    "Name" : f"Package # {i}"
+                },
+                "data" : {
+                    "Content" : f"fedc0973923ba23948efff",
+                    "JSProgram" : "exit()",
+                    "URL" : f"https://url.to.package_{i}"
+                }
+            })).execute()
+        package_query = [
+            {
+                "Version" : "1.2.3",
+                # "Version" : "1.2.3-2.1.0",
+                # "Version" : "^1.2.3",
+                # "Version" : "~1.2.0",
+                "Name" : "Name"
+            }
+        ]
         response = self.client.open(
             '/packages',
             method='GET',
-            headers=headers,
+            headers={},
             data=json.dumps(package_query),
             content_type='application/json',
-            query_string=query_string)
-        # self.assert200(response,
-        #                'Response body is : ' + response.data.decode('utf-8'))
+            query_string=[('offset', 0)]
+        )
+        self.assert200(response,
+                       'Response body is : ' + response.data.decode('utf-8'))
+        assert json.loads(response.data) == [v['metadata'] for k,v in db.get('package').items()]
 
     def test_registry_reset(self):
         """Test case for registry_reset

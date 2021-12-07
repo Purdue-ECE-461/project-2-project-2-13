@@ -125,7 +125,7 @@ def package_update(id_):
     if connexion.request.is_json:
         package = Package.from_dict(connexion.request.get_json())
         query = PackageQueryDb(UpdateOperation(), package)
-        response: Package = query.execute()
+        response = query.execute()
         return None, 200
 
 
@@ -141,7 +141,9 @@ def packages_list(offset=0):
     """
     if connexion.request.is_json:
         package_query = [PackageQuery.from_dict(d) for d in connexion.request.get_json()]
-    return []
+    query = PackageQueryDb(SearchOperation('list', offset))
+    response = query.execute()
+    return response, 200 if response else 400
 
 
 def registry_reset():
