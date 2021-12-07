@@ -27,7 +27,13 @@ def package_by_name_delete(name):
 
     :rtype: None
     """
-    return 'do some magic!'
+    query = PackageQueryDb(SearchOperation('byName', name))
+    response = query.execute()
+    if (response):
+        query = PackageQueryDb(DeleteOperation(), Package(PackageMetadata(id=response.id)))
+        query.execute()
+        return None, 200
+    return None, 400
 
 
 def package_by_name_get(name):

@@ -26,12 +26,28 @@ class TestDefaultController(BaseTestCase):
 
         Delete all versions of this package.
         """
-        headers = { 
-        }
+        # Insert the package
+        package = Package.from_dict(
+            {
+                "metadata" : {
+                    "Version" : "1.2.3",
+                    "ID" : "id_example",
+                    "Name" : "name_example"
+                },
+                    "data" : {
+                        "Content" : "content_example",
+                        "JSProgram" : "jsprogram_example",
+                        "URL" : "url_example"
+                }
+            }
+        )
+        PackageQueryDb(CreateOperation(), package).execute()
+
         response = self.client.open(
-            '/package/byName/{name}'.format(name='name_example'),
+            '/package/byName/{name}'.format(name=package.metadata.name),
             method='DELETE',
-            headers=headers)
+            headers={})
+
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
