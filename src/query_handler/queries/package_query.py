@@ -33,25 +33,19 @@ class PackageQuery(Query):
             data = db.get('package', resource.metadata.id)
             return None if data is None else Package.from_dict(data)
         elif isinstance(operation, SearchOperation):
-            if (operation.method == 'byName'):
-                name = operation.value
-                packages = db.get('package')
-                for id in packages:
-                    temp = Package.from_dict(packages[id])
-                    if (temp.metadata.name == name):
-                        return PackageMetadata.from_dict(packages[id]['metadata'])
-                logging.error(f'package with name \'{name}\' not found')
-            elif (operation.method == 'list'):
-                offset = int(operation.value)
-                results = []
-                packages = db.get('package')
-                for idx, id in enumerate(packages, offset):
-                    if (len(results) < 10):
-                        results.append(PackageMetadata.from_dict(packages[id]['metadata']))
-                return results
-            else:
-                logging.error(f'operation method \'{operation.method}\' is not supported')
-            return None
+            results = []
+            table = db.get('package')
+            keys = list(table)
+            i = 0
+            num_matches = 0
+            while (i < len(keys) and len(results) < 10):
+                package = Package.from_dict(table[keys[i]])
+                if (operation.query.matches(package.metadata)):
+                    num_matches += 1
+                    if (num_matches > operation.offset):
+                        results.append(package.metadata)
+                i += 1
+            return results
         elif isinstance(operation, DeleteOperation):
             if (resource is None):
                 db.reset('package')

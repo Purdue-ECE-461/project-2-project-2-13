@@ -1,7 +1,8 @@
 from typing import List
 import connexion
 import six
-import datetime
+from datetime import datetime
+
 from openapi_server import util
 from openapi_server.models.error import Error
 from openapi_server.models.package import Package
@@ -27,10 +28,10 @@ def package_by_name_delete(name):
 
     :rtype: None
     """
-    query = PackageQueryDb(SearchOperation('byName', name))
+    query = PackageQueryDb(SearchOperation(PackageQuery(name=name)))
     response = query.execute()
-    if (response):
-        query = PackageQueryDb(DeleteOperation(), Package(PackageMetadata(id=response.id)))
+    if (response and response[0]):
+        query = PackageQueryDb(DeleteOperation(), Package(PackageMetadata(id=response[0].id)))
         query.execute()
         return None, 200
     return None, 400
@@ -46,10 +47,10 @@ def package_by_name_get(name):
 
     :rtype: List[PackageHistoryEntry]
     """
-    query = PackageQueryDb(SearchOperation('byName', name))
+    query = PackageQueryDb(SearchOperation(PackageQuery(name=name)))
     response = query.execute()
-    if (response):
-        data = [PackageHistoryEntry(datetime.date.today(), response, 'CREATE')]
+    if (response and response[0]):
+        data = [PackageHistoryEntry(datetime.now().isoformat(), response[0], 'CREATE').to_dict()]
         return data, 200
     else:
         return None, 400
@@ -93,7 +94,7 @@ def package_rate(id_):
 
     :rtype: PackageRating
     """
-    return 'do some magic!'
+    return None, 501
 
 
 def package_retrieve(id_):
@@ -139,10 +140,11 @@ def packages_list(offset=0):
 
     :rtype: List[PackageMetadata]
     """
+    response = []
     if connexion.request.is_json:
-        package_query = [PackageQuery.from_dict(d) for d in connexion.request.get_json()]
-    query = PackageQueryDb(SearchOperation('list', offset))
-    response = query.execute()
+        for d in connexion.request.get_json():
+            query = PackageQuery.from_dict(d)
+            response += PackageQueryDb(SearchOperation(query, int(offset))).execute()
     return response, 200 if response else 400
 
 

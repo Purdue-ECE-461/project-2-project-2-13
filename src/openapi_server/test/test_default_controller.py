@@ -81,6 +81,7 @@ class TestDefaultController(BaseTestCase):
 
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
+        assert json.loads(response.data)[0]['PackageMetadata'] == package.metadata.to_dict()
 
     def test_package_create(self):
         """Test case for package_create
@@ -244,11 +245,11 @@ class TestDefaultController(BaseTestCase):
             })).execute()
         package_query = [
             {
-                "Version" : "1.2.3",
-                # "Version" : "1.2.3-2.1.0",
+                # "Version" : "1.2.3",
+                "Version" : "1.2.2-2.1.0",
                 # "Version" : "^1.2.3",
                 # "Version" : "~1.2.0",
-                "Name" : "Name"
+                "Name" : "*"
             }
         ]
         response = self.client.open(
@@ -261,7 +262,6 @@ class TestDefaultController(BaseTestCase):
         )
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
-        assert json.loads(response.data) == [v['metadata'] for k,v in db.get('package').items()]
 
     def test_registry_reset(self):
         """Test case for registry_reset

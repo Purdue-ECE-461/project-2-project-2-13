@@ -1,12 +1,14 @@
 # coding: utf-8
 
 from __future__ import absolute_import
+
+import re
 from datetime import date, datetime  # noqa: F401
+from typing import Dict, List  # noqa: F401
 
-from typing import List, Dict  # noqa: F401
-
-from openapi_server.models.base_model_ import Model
 from openapi_server import util
+from openapi_server.models.base_model_ import Model
+from semver import satisfies
 
 
 class PackageQuery(Model):
@@ -35,6 +37,19 @@ class PackageQuery(Model):
 
         self._version = version
         self._name = name
+    
+    def matches(self, package_metadata):
+        # Check name matching
+        if (self.name != None and self.name != '*'):
+            if (package_metadata.name != self.name):
+                return False
+        # Check version matching
+        if (self.version != None):
+            self.version = re.sub(r'(\d)-(\d)', r'\1 - \2', self.version)
+            if (satisfies(package_metadata.version, self.version) == False):
+                return False
+        return True
+            
 
     @classmethod
     def from_dict(cls, dikt) -> 'PackageQuery':

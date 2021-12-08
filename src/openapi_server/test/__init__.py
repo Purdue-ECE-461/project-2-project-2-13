@@ -5,6 +5,8 @@ from flask_testing import TestCase
 
 from openapi_server.encoder import JSONEncoder
 
+import db
+
 
 class BaseTestCase(TestCase):
 
@@ -14,3 +16,6 @@ class BaseTestCase(TestCase):
         app.app.json_encoder = JSONEncoder
         app.add_api('openapi.yaml', pythonic_params=True)
         return app.app
+
+    def setUp(self):
+        db.reset('package')
