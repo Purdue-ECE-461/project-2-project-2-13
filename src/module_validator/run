@@ -8,6 +8,7 @@ if [ "$1" == "install" ]; then
   python3 -m pip install --user Datetime
   python3 -m pip install --user beautifulsoup4
   python3 -m pip install --user bs4
+  python3 -m pip install --user graphql
 elif [ "$1" == "test" ]; then
   python3 test.py
 else
