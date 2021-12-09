@@ -4,6 +4,8 @@ import os
 from pprint import pprint
 import logging
 
+from requests import api
+from github import Github
 import rest
 import re
 
@@ -13,7 +15,8 @@ from bs4 import BeautifulSoup
 import urllib.request
 import urllib3
 from datetime import datetime
-
+os.environ["LOG_FILE"] = "./log.txt"
+os.environ["GITHUB_TOKEN"] = "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"
 
 # Use this base url for now
 # https://github.com/githubtraining/hellogitworld
@@ -26,6 +29,15 @@ def getNetScore(owner, repo, log):
     # Base API Object used to call methods in rest.py
     apiObj = rest.GitRestAPI(owner, repo)
     repo = apiObj.getRepo()
+    
+    array_name = repo['html_url'].split('/')
+    array_name.reverse()
+    first = array_name[1]
+    second = array_name[0]
+    final = first+'/'+second
+
+
+    
 
     if len(repo) == 2 and apiObj.getCommits()['message'] == 'Not Found':
         log.error("GitHub repository not found\nExiting safely")
@@ -33,7 +45,6 @@ def getNetScore(owner, repo, log):
 
     responsivenessScore = gradeResponsiveness(apiObj, log)
     if responsivenessScore == -1:
-        print("hello")
         return 1, -1
     busScore = gradeBusFactor(apiObj, log)
     if busScore == -1:
@@ -47,11 +58,15 @@ def getNetScore(owner, repo, log):
     correctnessScore = gradeCorrectness(apiObj, log)
     if correctnessScore == -1:
         return 1, -1
-    totalScore = licenseScore * (0.5 * responsivenessScore) + (0.2 * busScore) + (.2 * correctnessScore) + (
-            .1 * rampUpScore)
+    versionScore = grade_version(apiObj,log,first,second)
+    if versionScore == -1:
+        return 1,-1
+    versionScore = versionScore 
+    totalScore = licenseScore * (0.3 * responsivenessScore) + (0.1 * busScore) + (.2 * correctnessScore) + (
+            .1 * rampUpScore) * (0.3 * (versionScore/10))
 
     print(
-        f"{repo['html_url']} {round(totalScore, 2)} {round(rampUpScore, 2)} {round(correctnessScore, 2)} {round(busScore, 2)} {round(responsivenessScore, 2)} {round(licenseScore, 2)}")
+        f"{repo['html_url']} {round(totalScore, 2)} {round(rampUpScore, 2)} {round(correctnessScore, 2)} {round(busScore, 2)} {round(responsivenessScore, 2)} {round(licenseScore, 2)} {round(versionScore, 2)}")
     
     logger.info("Net score calculated")
     return 0, totalScore
@@ -74,7 +89,60 @@ def gradeRampUp(apiObj, log) -> float:
     elif readme['size'] > 0:
         return 1
 
+def grade_version(apiObj,log,first,second)->float:
+    headers = {"Authorization": "Bearer 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",
+                "Accept":"application/vnd.github.hawkgirl-preview+json"}
 
+
+    def run_query(query): # A simple function to use requests.post to make the API call. Note the json= section.
+        request = requests.post('https://api.github.com/graphql', json={'query': query}, headers=headers)
+        if request.status_code == 200:
+            return request.json()
+        else:
+            raise Exception("Query failed to run by returning code of {}. {}".format(request.status_code, query))
+    
+    
+       
+    # The GraphQL query (with a few aditional bits included) itself defined as a multi-line string.       
+    query = """
+    {
+    repository(owner:"%s", name:"%s") {
+        dependencyGraphManifests {
+        totalCount
+        nodes {
+            filename
+        }
+        edges {
+            node {
+            blobPath
+            dependencies {
+                totalCount
+                nodes {
+                packageName
+                requirements
+                hasDependencies
+                packageManager
+                }
+            }
+            }
+        }
+        }
+    }
+    }
+    """%(first,second)
+    all_dependencies = []
+    result = run_query(query) # Execute the query
+
+    if(result['data']['repository'] == None):
+        return 0
+        
+    result = result["data"]["repository"]["dependencyGraphManifests"]["edges"]
+    if(result == []):
+        return 1
+    for i in range(len(result[0]['node']['dependencies']['nodes'])):
+        all_dependencies.append(result[0]['node']['dependencies']['nodes'][i]['requirements'])
+    if(len(all_dependencies) > 2):
+        return 0
 # Need Number of issues, sum of open and closed issues, active contributors, total contributors
 def gradeCorrectness(apiObj, log) -> float:
     logger.info("Grading Correctness")
@@ -129,6 +197,8 @@ def getNumActiveContributors(contributorActivity, totalNumContributors) -> float
         if contributor['a'] > avgNumAdditions or contributor['c'] > avgNumCommits or contributor['d'] > avgNumDeletions:
             num += 1
     return num
+
+
 
 
 def gradeResponsiveness(apiObj, log) -> float:
